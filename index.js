@@ -33,17 +33,58 @@ app.get('/game/:id', (req, res)=>{
                 
             }
         })
+ 
+    }
+});
+
+app.post('/game', (req, res) =>{
+    var {titulo, preco, ano} = req.body
+
+    conexao.query('INSERT INTO jogos SET ?', {titulo: titulo, preco:preco, ano:ano}, (error, results) =>{
+        if(error){
+            res.send(error)
+        }else{
+            res.sendStatus(200)
+        }
+    })
+});
+
+app.delete('/game/:id', (req, res)=>{
+    if(isNaN(req.params.id)){
+        res.sendStatus(400);
+    }else{
+        var id = parseInt(req.params.id);
+        conexao.query('DELETE FROM jogos WHERE id =?', [id], (error, results)=>{
+            if(error){
+                throw error
+            }else{
+                res.sendStatus(200);
+            }
+
+           
+        })
+    }
+
+})
+
+app.put('/game/:id', (req, res)=>{
+    if(isNaN(req.params.id)){
+        res.sendStatus(400);
+    }else{
+        var id = req.body.id
+        var {titulo, preco, ano} = req.body
+
+        if(titulo != undefined){
+            conexao.query('UPDATE jogos SET ? WHERE id =? '), {titulo: titulo}, [id], (error, result) =>{
+                
+            }
+        }
+       
 
         
-        // if(game != undefined){
-        //     res.json(game)
-        // }else{
-        //     res.sendStatus(404);
-        // }
-       
-
-       
+ 
     }
+
 })
 
 app.listen(8000, () =>{
