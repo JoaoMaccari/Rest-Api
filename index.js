@@ -71,18 +71,35 @@ app.put('/game/:id', (req, res)=>{
     if(isNaN(req.params.id)){
         res.sendStatus(400);
     }else{
-        var id = req.body.id
-        var {titulo, preco, ano} = req.body
+        var id = req.params.id
+        var titulo = req.body.titulo
+        var preco = req.body.preco
 
         if(titulo != undefined){
-            conexao.query('UPDATE jogos SET ? WHERE id =? '), {titulo: titulo}, [id], (error, result) =>{
-                
-            }
-        }
-       
+            conexao.query('UPDATE jogos SET titulo=? WHERE id = ? ', [titulo, id], (error, result)=>{
+                if(error){
+                    console.log(result)
+                    throw error
+                }else{
+                    res.sendStatus(200)
+                }
+            })
 
+        }
         
- 
+        if(preco != undefined){
+            conexao.query('UPDATE jogos SET preco=? WHERE id = ? ', [preco, id], (error, result)=>{
+                if(error){
+                    console.log(result)
+                    throw error
+                }else{
+                    res.sendStatus(200)
+                }
+            })
+
+        }
+        
+        
     }
 
 })
