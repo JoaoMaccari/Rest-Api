@@ -71,9 +71,10 @@ app.put('/game/:id', (req, res)=>{
     if(isNaN(req.params.id)){
         res.sendStatus(400);
     }else{
-        var id = req.params.id
-        var titulo = req.body.titulo
-        var preco = req.body.preco
+        var id = req.params.id;
+        var titulo = req.body.titulo;
+        var preco = req.body.preco;
+        var ano = req.body.ano;
 
         if(titulo != undefined){
             conexao.query('UPDATE jogos SET titulo=? WHERE id = ? ', [titulo, id], (error, result)=>{
@@ -95,9 +96,23 @@ app.put('/game/:id', (req, res)=>{
                 }else{
                     res.sendStatus(200)
                 }
+            });
+
+        }
+
+        if(ano != undefined){
+            conexao.query('UPDATE jogos SET ano=? WHERE id = ? ', [ano, id], (error, result)=>{
+                if(error){
+                    console.log(result)
+                    throw error
+                }else{
+                    res.sendStatus(200)
+                }
             })
 
         }
+
+    
         
         
     }
