@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja</title>
+</head>
+<body>
+    <hr>
+    <h4>Lista Games</h4>
+    <ul id="games">
+
+    </ul>
+
+    <hr>
+    <h4>Cadastro de game</h4>
+    <input type="text" name="titulo" id="titulo" placeholder="titulo"><br>
+    <input type="number" name="ano" id="ano" placeholder="ano"><br>
+    <input type="number" name="preco" id="preco" placeholder="preco"><br>
+    <button type="button" onclick="createGame()">Criar</button> 
+    <hr>
+    <h4>Editar Game</h4>
+    <input type="text" name="idEdit" id="idEdit" placeholder="ID" readonly hidden><br>
+    <input type="text" name="titleEdit" id="titleEdit"><br>
+    <input type="number" name="yearEdit" id="yearEdit"><br>
+    <input type="number" name="priceEdit" id="priceEdit"><br>
+    <button type="button" onclick="updateGame()">Editar</button>
+    
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+
+<script>
+    
+    function createGame(){
+        var titleInput = document.getElementById('titulo');
+        var anoInput = document.getElementById('ano');
+        var precoInput = document.getElementById('preco')
+
+        var game = {
+            titulo: titleInput.value,
+            ano: anoInput.value,
+            preco: precoInput.value
+        }
+
+        console.log(game)
+
+        axios.post('http://localhost:8000/game', game).then(response =>{
+            if(response.status == 200){
+                alert('game cadastrado"')
+                location.reload()
+            }else{
+                console.log('erro')
+            }
+        }).catch(err =>{
+
+        });
+    }
+
+    function deleteGame(listItem){
+        var id = listItem.getAttribute('data-id');
+        console.log(id);
+        axios.delete('http://localhost:8000/game/'+id).then(response =>{
+            alert('game deletado')
+            location.reload()
+        }).catch(err =>{
+            console.log(err)
+        })
+
+
+    }
+
+    function loadForm(listItem){
+        var id = listItem.getAttribute('data-id');
+        var titulo = listItem.getAttribute('data-titulo')
+        var ano = listItem.getAttribute('data-ano');
+        var preco = listItem.getAttribute('data-preco')
+
+        document.getElementById('idEdit').value = id
+        document.getElementById('titleEdit').value = titulo
+        document.getElementById('yearEdit').value = ano
+        document.getElementById('priceEdit').value = preco
+    }
+
+    function updateGame(){
+        var idInput = document.getElementById('idEdit')
+        var titleInput = document.getElementById('titleEdit');
+        var anoInput = document.getElementById('yearEdit');
+        var precoInput = document.getElementById('priceEdit')
+
+        var game = {
+            titulo: titleInput.value,
+            ano: anoInput.value,
+            preco: precoInput.value
+        }
+
+        var id = idInput.value
+
+        axios.put('http://localhost:8000/game/'+id, game).then(response =>{
+            if(response.status == 200){
+                alert('game atualizado')
+                location.reload()
+            }
+        }).catch(err =>{
+
+        });
+    }
+
+    axios.get('http://localhost:8000/games').then(response =>{
+        
+        console.log(response)
+
+        //var games é um arrey recebe as informações da api
+        //data contem as iformações que foram inseridas no db
+        var games = response.data
+        var list = document.getElementById('games');
+
+        //foreach que vai percorrer todos os itens da api
+        games.forEach( game =>{
+            
+            var item = document.createElement('li');
+
+            item.setAttribute('data-id', game.id);
+            item.setAttribute('data-titulo', game.titulo);
+            item.setAttribute('data-ano', game.ano);
+            item.setAttribute('data-preco', game.preco)
+
+            //passo as info da data da api para o item gerado 
+            //aqui eu tenho que pergar os nomes exatamente como foi criado no db e api
+            item.innerHTML = "R$ " + game.preco + " - " + game.titulo + " - " + game.ano ;
+
+            var deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML='Deletar'
+            deleteBtn.addEventListener('click', function(){
+                
+                deleteGame(item)
+            });
+
+            var editBtn = document.createElement('button')
+            editBtn.innerHTML = 'Editar'
+            editBtn.addEventListener('click', function(){
+                loadForm(item)
+            })
+
+            item.appendChild(editBtn);
+            item.appendChild(deleteBtn);
+
+            list.appendChild(item);
+        })
+
+    }).catch(error =>{
+        console.log(error)
+    })
+</script>
+</html>

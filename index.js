@@ -1,7 +1,10 @@
 const express = require('express');
 const app = express();
-const conexao = require('./database/db')
+const conexao = require("./database/db")
+const cors = require('cors')
 
+
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true}));
 
